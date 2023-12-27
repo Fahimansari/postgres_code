@@ -1,0 +1,71 @@
+const { DataTypes } = require('sequelize');
+module.exports={
+	name:'AlexCashflow',
+	config:{
+		// Specify the table name explicitly
+		tableName: 'gsheet_alex_cashflow',
+		// timestamps: false
+	},
+	attributes:{
+		"date":{
+		    type:DataTypes.DATEONLY,
+		    allowNull:false,
+		},
+		"icici_651":{
+			type:DataTypes.FLOAT,
+			allowNull:true,
+		},
+		"icici_451":{
+			type:DataTypes.FLOAT,
+			allowNull:true,
+		},
+		"icici_452":{
+			type:DataTypes.FLOAT,
+			allowNull:true,
+		},
+		"icici_131":{
+			type:DataTypes.FLOAT,
+			allowNull:true,
+		},
+		"icici_cc_3000":{
+			type:DataTypes.FLOAT,
+			allowNull:true,
+		},
+		"icici_cc_9028":{
+			type:DataTypes.FLOAT,
+			allowNull:true,
+		},
+		"hdfc_1680":{
+			type:DataTypes.FLOAT,
+			allowNull:true,
+		},
+		"hdfc_2719":{
+			type:DataTypes.FLOAT,
+			allowNull:true,
+		},
+		"hdfc_cc_8145":{
+			type:DataTypes.FLOAT,
+			allowNull:true,
+		},
+		"cash_in_bank":{
+			type:DataTypes.FLOAT,
+			allowNull:true,
+		},
+		"credit_card_debt":{
+			type:DataTypes.FLOAT,
+			allowNull:true,
+		},
+		"net_cash":{
+			type:DataTypes.FLOAT,
+			allowNull:true,
+		},
+		"gain_or_loss":{
+			type:DataTypes.FLOAT,
+			allowNull:true,
+		},		
+		"comments":{
+			type:DataTypes.TEXT,
+			allowNull:true,
+		},
+	},
+}
