@@ -1,73 +1,131 @@
-console.log('alex_cashflow_track');
+console.log("alex_cashflow_track");
+const { Sequelize, DataTypes } = require("sequelize");
+const moment = require('moment')
+
 
 // --------------------   load environment variables  --------------------
-const path = require('path'); 
-require('dotenv').config({ path: path.join(__dirname, '.env') });
+const path = require("path");
+require("dotenv").config({ path: path.join(__dirname, ".env") });
 // --------------------        Done        --------------------
 
-
-var async = require('async');
+var async = require("async");
 // console.log(__dirname);
-var GoogleSheetService = require('./googleSheetService');
+var GoogleSheetService = require("./googleSheetService");
 // console.log(integration);
 
-var transform = function(rows){
-	// if there is no header, set it to 0.
-	// header row is the row number from google sheet, not the array index.
-	var header_row=2 // 2th row is the header
-	var entries = [];
-	var cleanNumber=function(a){
-		if(!a)
-			return 0;
-		var b = a.trim().split(',').join('');
-		return parseFloat(b);
+var transform = function (rows) {
+  // if there is no header, set it to 0.
+  // header row is the row number from google sheet, not the array index.
+  var header_row = 2; // 2th row is the header
+  var entries = [];
+  var cleanNumber = function (a) {
+    if (!a) return 0;
+    var b = a.trim().split(",").join("");
+    return parseFloat(b);
+  };
+  for (var i = 0; i < rows.length; i++) {
+    if (i < header_row) continue;
+    var entry = {
+      // "date":rows[i][0],
+      input: cleanNumber("2"),
+      output: cleanNumber("2"),
+      backlog: cleanNumber("2"),
+      cycle_time: cleanNumber("2"),
+      station_number: cleanNumber("2"),
+      backlog_time: cleanNumber("2"),
+    };
+    entries.push(entry);
+  }
+  return entries;
+};
+async.auto(
+  {
+    getData: async function () {
+      var sheet_id = "10mglOtBwYoZ0NhI-q_7lm2zvxOSyKP1P0Fx4l8ynpVU";
+      var range = `Metrics!A:Z`;
+      return await GoogleSheetService.getDataFromOneSheet(sheet_id, range);
+    },
+    updatePostgres: [
+      "getData",
+      async function (results) {
+        const sequelize = new Sequelize(
+          process.env.DB_NAME,
+          process.env.DB_USER,
+          process.env.DB_PASSWORD,
+          {
+            host: process.env.DB_HOST,
+            dialect: "postgres",
+          }
+        );
 
-	}
-	for(var i=0;i<rows.length;i++){
-		if(i<header_row)
-			continue;
-		var entry = {
-			"date":rows[i][0],
-			"icici_651":cleanNumber(rows[i][1]),
-			"icici_451":cleanNumber(rows[i][2]),
-			"icici_452":cleanNumber(rows[i][3]),
-			"icici_131":cleanNumber(rows[i][4]),
-			"icici_cc_3000":cleanNumber(rows[i][5]),
-			"icici_cc_9028":cleanNumber(rows[i][6]),
-			"hdfc_1680":cleanNumber(rows[i][7]),
-			"hdfc_2719":cleanNumber(rows[i][8]),
-			"hdfc_cc_8145":cleanNumber(rows[i][9]),
-			"cash_in_bank":cleanNumber(rows[i][10]),
-			"credit_card_debt":cleanNumber(rows[i][11]),
-			"net_cash":cleanNumber(rows[i][12]),
-			"gain_or_loss":cleanNumber(rows[i][13]),
-			"comments":rows[i][14],
-		}
-		entries.push(entry);
-	}
-	return entries;
-}
-async.auto({
-	getData:async function(){
-		var sheet_id='10mglOtBwYoZ0NhI-q_7lm2zvxOSyKP1P0Fx4l8ynpVU';
-		var range=`Metrics!A:Z`;
-		return await GoogleSheetService.getDataFromOneSheet(sheet_id,range);
-	},
-	// updatePostgres:['getData',async function(results){
-	// 	var loadModels=require('./models/loadModels');
-	// 	var {AlexCashflow,sequelize}=loadModels();
-	// 	await AlexCashflow.sync();
+        const JobsPlLogging = sequelize.define("jobs_pl_logging", {
+          id: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            primaryKey: true,
+            autoIncrement: true,
 
-	// 	var entries = transform(results.getData);
-	// 	await AlexCashflow.destroy({truncate:true});// drops all data
-	// 	console.time('update db');
-	// 	await AlexCashflow.bulkCreate(entries); // adds all data
-	// 	console.timeEnd('update db');
-	// 	await sequelize.close();
-	// 	// console.log(DailyStandup);
-	// }]
-},function(err,results){
-	if(err)
-		throw err;
-	// console.log(results);
-})
+          },
+          date: {
+            type: DataTypes.DATEONLY,
+            defaultValue: moment().format('YYYY-MM-DD') ,
+            allowNull: true,
+          },
+          station_number: {
+            type: DataTypes.INTEGER,
+            allowNull: true,
+          },
+          input: {
+            type: DataTypes.INTEGER,
+            allowNull: true,
+          },
+          output: {
+            type: DataTypes.INTEGER,
+            allowNull: true,
+          },
+          backlog: {
+            type: DataTypes.INTEGER,
+            allowNull: true,
+          },
+          cycle_time: {
+            type: DataTypes.FLOAT,
+            allowNull: true,
+          },
+          backlog_time: {
+            type: DataTypes.FLOAT,
+            allowNull: true,
+          },
+        }, {
+            tableName: 'jobs_pl_log'
+        });
+
+        try {
+          await sequelize.authenticate();
+          console.log("Connection has been established successfully.");
+          var entries = transform(results.getData);
+          console.log(entries);
+          await JobsPlLogging.sync();
+          await JobsPlLogging.bulkCreate(entries);
+          await sequelize.close()
+        } catch (error) {
+          console.error("Unable to connect to the database:", error);
+        }
+
+        // var loadModels=require('./models/loadModels');
+        // var {AlexCashflow,sequelize}=loadModels();
+
+        // var entries = transform(results.getData);
+        // await AlexCashflow.destroy({truncate:true});// drops all data
+        // console.time('update db');
+        // await AlexCashflow.bulkCreate(entries); // adds all data
+        // console.timeEnd('update db');
+        // await sequelize.close();
+        // console.log(DailyStandup);
+      },
+    ],
+  },
+  function (err, results) {
+    if (err) throw err;
+    // console.log(results);
+  }
+);

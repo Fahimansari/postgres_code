@@ -7,65 +7,39 @@ module.exports={
 		// timestamps: false
 	},
 	attributes:{
-		"date":{
-		    type:DataTypes.DATEONLY,
+		"id":{
+		    type:DataTypes.INT,
 		    allowNull:false,
 		},
-		"icici_651":{
+		"date":{
+			type:DataTypes.DATE,
+			allowNull:false,
+		},
+		"station_number":{
+			type:DataTypes.INT,
+			allowNull:true,
+		},
+		"input":{
+			type:DataTypes.INT,
+			allowNull:true,
+		},
+		"output":{
+			type:DataTypes.INT,
+			allowNull:true,
+		},
+		"backlog":{
+			type:DataTypes.INT,
+			allowNull:true,
+		},
+		"cycle_time":{
 			type:DataTypes.FLOAT,
 			allowNull:true,
 		},
-		"icici_451":{
+		"backlog_time":{
 			type:DataTypes.FLOAT,
 			allowNull:true,
 		},
-		"icici_452":{
-			type:DataTypes.FLOAT,
-			allowNull:true,
-		},
-		"icici_131":{
-			type:DataTypes.FLOAT,
-			allowNull:true,
-		},
-		"icici_cc_3000":{
-			type:DataTypes.FLOAT,
-			allowNull:true,
-		},
-		"icici_cc_9028":{
-			type:DataTypes.FLOAT,
-			allowNull:true,
-		},
-		"hdfc_1680":{
-			type:DataTypes.FLOAT,
-			allowNull:true,
-		},
-		"hdfc_2719":{
-			type:DataTypes.FLOAT,
-			allowNull:true,
-		},
-		"hdfc_cc_8145":{
-			type:DataTypes.FLOAT,
-			allowNull:true,
-		},
-		"cash_in_bank":{
-			type:DataTypes.FLOAT,
-			allowNull:true,
-		},
-		"credit_card_debt":{
-			type:DataTypes.FLOAT,
-			allowNull:true,
-		},
-		"net_cash":{
-			type:DataTypes.FLOAT,
-			allowNull:true,
-		},
-		"gain_or_loss":{
-			type:DataTypes.FLOAT,
-			allowNull:true,
-		},		
-		"comments":{
-			type:DataTypes.TEXT,
-			allowNull:true,
-		},
+		
 	},
 }
+
