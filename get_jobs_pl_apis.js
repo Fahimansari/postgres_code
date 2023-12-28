@@ -73,7 +73,7 @@ async.auto(
           var entries = transform(results.getData);
             
           await JobsPlLoggingAPIs.sync();
-          await JobsPlLoggingAPIs.destroy({truncate:true});
+        //   await JobsPlLoggingAPIs.destroy({truncate:true});
           await JobsPlLoggingAPIs.bulkCreate(entries);
           await sequelize.close()
         } catch (error) {
