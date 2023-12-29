@@ -78,7 +78,7 @@ async.auto(
           var entries = transform(results.getData);
             
           await JobsPlLoggingConnectors.sync();
-          await JobsPlLoggingConnectors.destroy({truncate:true});
+          // await JobsPlLoggingConnectors.destroy({truncate:true});
           await JobsPlLoggingConnectors.bulkCreate(entries);
           await sequelize.close()
         } catch (error) {
