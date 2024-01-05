@@ -41,6 +41,7 @@ var transform = function (rows) {
         job_id  : rows[i][11],
         path: rows[i][12],
         postman_link: rows[i][13],
+        review_comments: rows[i][14],
 
 
       }; 

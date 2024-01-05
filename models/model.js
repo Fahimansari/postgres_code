@@ -264,6 +264,11 @@ const JobsPlLogJobsModel={
 			type: DataTypes.TEXT,
 			allowNull: true,
 		},
+
+		review_comments:{
+			type: DataTypes.TEXT,
+			allowNull: true,
+		},
 		
 	
 	}
