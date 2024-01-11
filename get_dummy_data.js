@@ -1,7 +1,6 @@
-console.log("alex_cashflow_track");
-const { Sequelize, DataTypes } = require("sequelize");
+const { Sequelize } = require("sequelize");
 const moment = require('moment')
-const {JobsPlLogMetricsModel} = require('./models/model')
+const {DummyTable} = require('./models/model')
 
 
 // --------------------   load environment variables  --------------------
@@ -47,12 +46,20 @@ var transform = function (rows) {
 
     return entries;
 };
+
+let createTenEntries = (entry) => {
+    let entries = []
+for (let i = 0; i < 2; i++) {
+    entries.push(entry)
+    
+}
+return entries
+}
+
 async.auto(
   {
     getData: async function () {
-      var sheet_id = "10mglOtBwYoZ0NhI-q_7lm2zvxOSyKP1P0Fx4l8ynpVU";
-      var range = `Metrics!A:Z`;
-      return await GoogleSheetService.getDataFromOneSheet(sheet_id, range);
+      
     },
     updatePostgres: [
       "getData",
@@ -64,28 +71,31 @@ async.auto(
           {
             host: process.env.DB_HOST,
             dialect: "postgres",
-            ssl: true,
-          dialectOptions: {
-            ssl: {
-              require: true,
-              rejectUnauthorized: false,
-            },
-          },
           }
         );
 
-        const JobsPlLogging = sequelize.define("jobs_pl_logging", JobsPlLogMetricsModel.attributes, {
-            tableName: JobsPlLogMetricsModel.table_name
+        const DummyTableUpdate = sequelize.define("dummy_data", DummyTable.attributes, {
+            tableName: DummyTable.table_name
         });
 
         try {
           await sequelize.authenticate();
           console.log("Connection has been established successfully.");
-          var entries = transform(results.getData);
+          const entry =  {
+            name: 'alex',
+            log_date: moment().format('YYYY-MM-DD'),
+          }
+
+          const entries = createTenEntries(entry)
+          
       
-          await JobsPlLogging.sync();
-          await JobsPlLogging.destroy({where: {date: moment().format('YYYY-MM-DD')}});
-          await JobsPlLogging.bulkCreate(entries);
+          await DummyTableUpdate.sync();
+          await DummyTableUpdate.destroy({
+            where: {
+                log_date: moment().format('YYYY-MM-DD') ,
+            }
+          })
+          await DummyTableUpdate.bulkCreate(entries);
           await sequelize.close()
         } catch (error) {
           console.error("Unable to connect to the database:", error);

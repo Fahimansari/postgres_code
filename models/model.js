@@ -275,7 +275,32 @@ const JobsPlLogJobsModel={
 
 }
 
-module.exports={JobsPlLogMetricsModel, JobsPlLogConnectorsModel, JobsPlLogAPIsModel, JobsPlLogJobsModel}
+const DummyTable = {
+	table_name: 'dummy_table',
+	attributes:	{
+		id: {
+			type : DataTypes.INTEGER,
+			allowNull: false,
+			primaryKey: true,
+			autoIncrement: true,
+		},
+
+		name: {
+			type: DataTypes.TEXT,
+			allowNull: true,
+		},
+
+		log_date: {
+			type: DataTypes.DATEONLY,
+			defaultValue: moment().format('YYYY-MM-DD') ,
+			allowNull: true,
+		},
+
+	}
+}
+
+
+module.exports={JobsPlLogMetricsModel, JobsPlLogConnectorsModel, JobsPlLogAPIsModel, JobsPlLogJobsModel, DummyTable}
 
 
 

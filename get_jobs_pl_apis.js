@@ -60,6 +60,13 @@ async.auto(
           {
             host: process.env.DB_HOST,
             dialect: "postgres",
+            ssl: true,
+          dialectOptions: {
+            ssl: {
+              require: true,
+              rejectUnauthorized: false,
+            },
+          },
           }
         );
 
@@ -73,7 +80,7 @@ async.auto(
           var entries = transform(results.getData);
             
           await JobsPlLoggingAPIs.sync();
-        //   await JobsPlLoggingAPIs.destroy({truncate:true});
+          await JobsPlLoggingAPIs.destroy({where: {log_date: moment().format('YYYY-MM-DD')}});
           await JobsPlLoggingAPIs.bulkCreate(entries);
           await sequelize.close()
         } catch (error) {
