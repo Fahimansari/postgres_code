@@ -1,0 +1,6 @@
+# This file contains configuration for local resources, config variables, and environment variables.
+# For more information, see the docs on the dev config file: https://docs.airplane.dev/dev-lifecycle/dev-config-file
+resources: []
+configVars:
+    DUMMY_DATA: This is the local dummy data
+envVars: {}
